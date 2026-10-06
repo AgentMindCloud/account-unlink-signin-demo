@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grok Bot unlink and sign-in recovery</title>
+  <style>
+    :root {
+      --paper: #efe8dc;
+      --card: #fbf7f1;
+      --ink: #1d1914;
+      --muted: #5e564c;
+      --line: #d5cbbd;
+      --fail: #7d1c14;
+      --fail-ink: #fff8f4;
+      --pine: #1d4738;
+      --pine-ink: #f3faf6;
+      --warn: #6d4a12;
+      --shadow: 0 1px 0 rgba(29, 25, 20, 0.04);
+    }
+
+    * { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 17px/1.5 "Segoe UI", "Helvetica Neue", sans-serif;
+    }
+
+    #verdict-banner {
+      background: var(--fail);
+      color: var(--fail-ink);
+      padding: 12px 22px;
+    }
+
+    #verdict-banner p { margin: 0; max-width: 78rem; }
+    #verdict-banner p + p { margin-top: 6px; }
+    #verdict-banner strong { letter-spacing: 0.04em; }
+
+    .wrap { max-width: 78rem; margin: 0 auto; padding: 28px 22px 64px; }
+
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-family: Palatino, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+    }
+
+    .lede { margin: 0; max-width: 42rem; font-size: 1.05rem; }
+
+    .cases {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 14px;
+      margin: 22px 0 8px;
+    }
+
+    .case-card, .work, .evidence, .repeat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .case-card { padding: 14px 16px; }
+    .case-card h2 { margin: 0 0 6px; font-size: 1rem; }
+    .case-card ol, .case-card ul { margin: 0; padding-left: 1.15rem; }
+    .case-card li + li { margin-top: 4px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .work, .evidence, .repeat { padding: 16px; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+
+    button, .tab {
+      font: inherit;
+      border-radius: 999px;
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+
+    button.primary { background: var(--pine); color: var(--pine-ink); border-color: var(--pine); }
+    button.warn { border-color: var(--warn); color: var(--warn); }
+    button:focus-visible, a:focus-visible { outline: 3px solid #1d4738; outline-offset: 2px; }
+
+    .stack { display: grid; gap: 10px; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .status, .alert, .note, .receipt, .mailbox, .xsession {
+      border-radius: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .alert { border-color: #e3b2ab; background: #fff6f4; }
+    .note { background: #f7f1e4; }
+    .xsession { background: #f3f7f4; }
+    .receipt {
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      margin: 0;
+    }
+
+    label { display: grid; gap: 6px; font-size: 0.95rem; }
+    input {
+      font: inherit;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .phone {
+      width: min(100%, 380px);
+      border: 10px solid #1d1914;
+      border-radius: 28px;
+      padding: 16px 14px 18px;
+      background: #fffdf9;
+    }
+
+    .phone h2 { margin: 0 0 8px; font-size: 1.15rem; }
+    .meta { color: var(--muted); font-size: 0.92rem; }
+
+    .evidence h2 { margin: 0 0 8px; font-size: 1.2rem; }
+    .quote { padding: 12px 0; border-top: 1px solid var(--line); }
+    .quote h3 { margin: 0 0 6px; font-size: 0.95rem; }
+    blockquote { margin: 0 0 8px; }
+    .quote a { color: var(--pine); word-break: break-word; }
+    .quote .cases { display: block; margin: 0; color: var(--muted); font-size: 0.85rem; }
+
+    footer { margin-top: 18px; color: var(--muted); font-size: 0.92rem; }
+    h2.section { margin: 0 0 8px; font-size: 1.35rem; font-family: Palatino, Georgia, serif; }
+
+    @media (max-width: 860px) {
+      .cases, .layout { grid-template-columns: 1fr; }
+      .wrap { padding: 20px 14px 48px; }
+      button, .tab { width: 100%; }
+      .row { display: grid; }
+    }
+  </style>
+</head>
+<body>
+  <div id="verdict-banner" role="status">
+    <p><strong>BUILD VERDICT: FAIL</strong></p>
+    <p>Data on this page is simulated. Live Cursor help still dead-ends “already linked to another Cursor account.” This draft does not clear that failure.</p>
+  </div>
+
+  <div class="wrap">
+    <p class="kicker">Grok Bot · Cursor account recovery draft · checked 6 Oct 2026</p>
+    <h1>Unlink a stuck Grok Bot and sign in on the device you have</h1>
+    <p class="lede">This desk walks the two public reports. The buttons run a simulated binding record. They do not call Cursor, X, or a mail provider, and they do not change the live product.</p>
+
+    <div class="cases">
+      <section class="case-card">
+        <h2>Live product matches these failures</h2>
+        <ol>
+          <li>The link stops on “already linked to another Cursor account,” and the help page says nobody can unlink it.</li>
+          <li>Recovery mail is not a completing path, and the published help has no alternate that finishes when mail never arrives.</li>
+          <li>Mobile sign-in is documented only as “use the same Cursor account,” with no switch off a Mac-stuck binding and no switch to X.</li>
+          <li>Get help is an email address. Forum staff send the same cases back to hi@cursor.com, where reporters say the reply is the AI assistant Sam and the link stays put.</li>
+        </ol>
+      </section>
+      <section class="case-card">
+        <h2>Not this class</h2>
+        <ul>
+          <li>Reinstalling the Mac, Windows, or Linux app does not move a binding. The sign-in article already says reinstalling usually does not fix auth errors.</li>
+          <li>Resetting weekly usage is a meter problem. It does not detach an X account.</li>
+          <li>Buying another Cursor plan, or a second store subscription, does not unlock the stuck link. The mobile article says not to buy again.</li>
+        </ul>
+      </section>
+    </div>
+
+    <div class="layout">
+      <div class="work">
+        <div class="tabs" role="tablist">
+          <button class="tab primary" id="tab-aubin" type="button">Stuck link · @AubinFernex</button>
+          <button class="tab" id="tab-lab" type="button">Mobile switch · @labmosaic</button>
+        </div>
+
+        <section id="panel-aubin" aria-label="Stuck link recovery">
+          <h2 class="section">Link X, then recover without the missing email</h2>
+          <p class="meta">Simulated accounts: X <span id="aubin-handle"></span>, current Cursor <code>cursor:aubin-current</code>, stale Cursor <code>cursor:stale-other</code>. Ticket id <strong>T-G68865</strong>.</p>
+          <p id="binding-status" class="status"></p>
+          <p id="aubin-empty" class="note">No link attempt yet. The X account is still bound to the other Cursor account. Other logins for that stale account are not available.</p>
+
+          <div class="stack">
+            <div class="row">
+              <button id="link-button" class="primary" type="button">Link X account</button>
+            </div>
+            <p id="link-loading" class="note" hidden>Checking the link record…</p>
+            <div id="link-error" class="alert" hidden role="alert">
+              <p id="link-error-text"></p>
+              <p>The live app stops here. This draft continues with three finishes: an X session proof, a human on the same ticket after mail fails, or an explicit note that reinstall, usage reset, and a new plan do nothing.</p>
+            </div>
+
+            <div id="recovery" class="stack" hidden>
+              <div class="xsession">
+                <p><strong>X session, already open.</strong> The ownership code below is shown in that session. It is not sent by email. Stated mail SLA in this draft: 15 minutes. This fixture never delivers the message.</p>
+                <p>Code <code id="proof-display"></code></p>
+              </div>
+
+              <div class="row">
+                <button id="email-button" type="button">Send recovery email</button>
+                <button id="prove-button" type="button">Use the X session code</button>
+                <button id="ticket-button" type="button">Open support ticket T-G68865</button>
+              </div>
+
+              <div id="mailbox" class="mailbox" hidden>
+                <p id="mailbox-status">Mailbox is empty.</p>
+                <button id="wait-sla" type="button">Wait through the 15-minute SLA</button>
+                <p id="email-blocked" hidden></p>
+              </div>
+
+              <form id="prove" class="stack" hidden>
+                <label>Type the X session code
+                  <input id="proof-input" name="proof" autocomplete="off" spellcheck="false">
+                </label>
+                <button id="confirm-rebind" class="primary" type="button">Unlink and re-link to this Cursor account</button>
+                <p id="proof-error" class="alert" hidden role="alert"></p>
+              </form>
+
+              <div id="ticket" class="stack" hidden>
+                <div id="ai-reply" class="alert"></div>
+                <label>Attach the same X session code to the ticket
+                  <input id="ticket-proof" name="ticket-proof" autocomplete="off" spellcheck="false">
+                </label>
+                <div class="row">
+                  <button id="attach-proof" type="button">Attach X session proof</button>
+                  <button id="escalate" type="button">Request a human</button>
+                </div>
+                <p id="escalate-note" class="note" hidden></p>
+                <button id="human-complete" class="primary" type="button" hidden>Human operator completes unlink</button>
+              </div>
+
+              <div class="row">
+                <button id="reinstall" class="warn" type="button">Reinstall the app</button>
+                <button id="reset-usage" class="warn" type="button">Reset weekly usage</button>
+                <button id="buy-sku" class="warn" type="button">Buy another Cursor plan</button>
+              </div>
+              <p id="wrong-class-note" class="note" hidden></p>
+
+              <pre id="receipt-body" class="receipt" hidden></pre>
+            </div>
+          </div>
+        </section>
+
+        <section id="panel-lab" hidden aria-label="Mobile account switch">
+          <h2 class="section">Phone sign-in that can reach the Mac account or switch to X</h2>
+          <p class="meta">Simulated report from @labmosaic. The Mac session holds <code>cursor:mac-labmosaic</code>. The phone is on <code>cursor:mobile-other</code>. No support chat is required for either finish.</p>
+          <div class="phone">
+            <p class="kicker">Grok Bot · iPhone</p>
+            <h2>Sign in with Cursor</h2>
+            <p id="lab-empty" class="note">The phone app is open. Grok Bot has not been reached yet.</p>
+            <button id="mobile-signin" class="primary" type="button">Continue with Cursor</button>
+            <p id="mobile-result" class="alert" hidden></p>
+            <div id="lab-offers" class="stack" hidden>
+              <button id="use-mac-account" type="button">Use the Mac Cursor account on this phone</button>
+              <div class="xsession">
+                <p>Switch Grok Bot to the X account you own. Code on that X session: <code id="lab-proof-display"></code></p>
+                <label>X session code
+                  <input id="lab-proof" name="lab-proof" autocomplete="off" spellcheck="false">
+                </label>
+                <button id="switch-to-x" class="primary" type="button">Switch Grok Bot to X</button>
+                <p id="lab-proof-error" class="alert" hidden></p>
+              </div>
+            </div>
+            <pre id="lab-receipt" class="receipt" hidden></pre>
+            <button id="reset-lab" type="button">Start this phone over</button>
+          </div>
+        </section>
+
+        <section class="repeat" id="repeat" aria-label="Second operator">
+          <h2 class="section">Second operator, separate workspace</h2>
+          <p class="meta">Same steps, different ids (<code>x:operator-b</code>, <code>cursor:operator-b-stale</code> to <code>cursor:operator-b-current</code>). Mail still does not arrive. The first scenario is left as it is.</p>
+          <button id="second-operator" type="button">Run the second operator</button>
+          <pre id="second-receipt" class="receipt" hidden></pre>
+        </section>
+      </div>
+
+      <aside class="evidence" aria-label="Live evidence">
+        <h2>Live product, quoted</h2>
+        <p>Fetched from public help, the forum, and the two posts. The verdict uses these pages, not the simulated buttons.</p>
+        <article class="quote">
+    <h3>Cursor Help · Link SuperGrok for Grok Bot</h3>
+    <blockquote>No. A SuperGrok or X Premium+ link is permanent once created. You can't unlink a Grok or X account from a Cursor account, and you can't move a link to a different Cursor account. Support can't unlink or move it either.</blockquote>
+    <p><a href="https://cursor.com/help/grok-bot/supergrok">https://cursor.com/help/grok-bot/supergrok</a></p>
+    <p class="cases">Mapped failure cases: 1, 4</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Help · wrong-account row</h3>
+    <blockquote>A SuperGrok or X Premium+ link is permanent. Neither you nor support can unlink it or move it to a different Cursor account. Sign into Grok Bot with the Cursor account that holds the link.</blockquote>
+    <p><a href="https://cursor.com/help/grok-bot/supergrok">https://cursor.com/help/grok-bot/supergrok</a></p>
+    <p class="cases">Mapped failure cases: 1, 4</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Help · Grok Bot FAQs</h3>
+    <blockquote>No. A link is permanent, and you cannot move it yourself. Contact support with the account that got the link and the account that should have it.</blockquote>
+    <p><a href="https://cursor.com/help/grok-bot/faqs">https://cursor.com/help/grok-bot/faqs</a></p>
+    <p class="cases">Mapped failure cases: 1</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Help · Sign in to Grok Bot</h3>
+    <blockquote>Sign in with the same Cursor account you use on desktop.</blockquote>
+    <p><a href="https://cursor.com/help/grok-bot/sign-in">https://cursor.com/help/grok-bot/sign-in</a></p>
+    <p class="cases">Mapped failure cases: 3</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Help · Grok Bot on mobile</h3>
+    <blockquote>Sign in on mobile with the same Cursor account you use on desktop or web.</blockquote>
+    <p><a href="https://cursor.com/help/grok-bot/mobile">https://cursor.com/help/grok-bot/mobile</a></p>
+    <p class="cases">Mapped failure cases: 3</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Help · Grok Bot on mobile</h3>
+    <blockquote>You should not purchase a second subscription through Apple or Google Play in these cases.</blockquote>
+    <p><a href="https://cursor.com/help/grok-bot/mobile">https://cursor.com/help/grok-bot/mobile</a></p>
+    <p class="cases">Mapped failure cases: 6</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Help · Get help</h3>
+    <blockquote>Email hi@cursor.com.</blockquote>
+    <p><a href="https://cursor.com/help/grok-bot/get-help">https://cursor.com/help/grok-bot/get-help</a></p>
+    <p class="cases">Mapped failure cases: 2, 4</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Help · Sign in to Grok Bot</h3>
+    <blockquote>Reinstalling the app usually does not fix this, so try the steps above first.</blockquote>
+    <p><a href="https://cursor.com/help/grok-bot/sign-in">https://cursor.com/help/grok-bot/sign-in</a></p>
+    <p class="cases">Mapped failure cases: 5</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Forum · @deanrie, 19 Aug 2026</h3>
+    <blockquote>Right now, deleting a Cursor account doesn’t free up the link to a Grok account, and there’s no self-serve way to unlink or relink yet.</blockquote>
+    <p><a href="https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783">https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783</a></p>
+    <p class="cases">Mapped failure cases: 1, 2</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Forum · @OTNworld, 19 Aug 2026</h3>
+    <blockquote>hi@cursor.com ticket T-E97626 is looping on the AI assistant (Sam). It says Support/Engineering cannot unlink, that a teammate would land in the same place, and that an xAI-side reset does not re-point the link.</blockquote>
+    <p><a href="https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783">https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783</a></p>
+    <p class="cases">Mapped failure cases: 4</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Forum · @Colin, 22 Aug 2026</h3>
+    <blockquote>We are not able to handle individual issues about account linking through the forum.</blockquote>
+    <p><a href="https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783">https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783</a></p>
+    <p class="cases">Mapped failure cases: 4</p>
+  </article>
+<article class="quote">
+    <h3>Cursor Forum · @deanrie, 18 Aug 2026</h3>
+    <blockquote>The error `That Grok account is already linked to another Cursor account` is a known issue we’re tracking. Right now, deleting a Cursor account does not remove the Grok account link, and there’s no self-serve way to unlink and relink yet.</blockquote>
+    <p><a href="https://forum.cursor.com/t/free-cursor-ultra-with-grok/168286/16">https://forum.cursor.com/t/free-cursor-ultra-with-grok/168286/16</a></p>
+    <p class="cases">Mapped failure cases: 1</p>
+  </article>
+<article class="quote">
+    <h3>X · @AubinFernex, 5 Oct 2026</h3>
+    <blockquote>Grok Bot link stuck: "already linked to another Cursor account." No other login, and the recovery email never arrives. T-G68865 is only Sam. Forum sent me back to that ticket.</blockquote>
+    <p><a href="https://x.com/AubinFernex/status/2107203371828478447">https://x.com/AubinFernex/status/2107203371828478447</a></p>
+    <p class="cases">Mapped failure cases: 1, 2, 4</p>
+  </article>
+<article class="quote">
+    <h3>X · @labmosaic</h3>
+    <blockquote>there is no way logging grokbot via cursor on mobile. My account stuck on the mac. Please fix this asap. I cannot change my grokbot to X account as well.</blockquote>
+    <p><a href="https://x.com/labmosaic/status/2107299322702495745">https://x.com/labmosaic/status/2107299322702495745</a></p>
+    <p class="cases">Mapped failure cases: 3</p>
+  </article>
+      </aside>
+    </div>
+
+    <footer>
+      <p>Draft only. No post, no product pull request, no merge, and no payment. Account names and mailbox addresses ending in example.test are fixtures. Ticket T-G68865 is the id from the public @AubinFernex report, printed on the simulated human receipt so a second person can find it.</p>
+    </footer>
+  </div>
+
+  <script>"use strict";
+var GrokRecovery = (() => {
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+  // src/recovery.ts
+  var recovery_exports = {};
+  __export(recovery_exports, {
+    ALREADY_LINKED_MESSAGE: () => ALREADY_LINKED_MESSAGE,
+    AUBIN: () => AUBIN,
+    AUBIN_TICKET_ID: () => AUBIN_TICKET_ID,
+    EMAIL_SLA_MINUTES: () => EMAIL_SLA_MINUTES,
+    LAB: () => LAB,
+    LIVE_FAILURE_CASES: () => LIVE_FAILURE_CASES,
+    LIVE_VERDICT: () => LIVE_VERDICT,
+    OPERATOR_B: () => OPERATOR_B,
+    advanceMailbox: () => advanceMailbox,
+    applyWrongClassFix: () => applyWrongClassFix,
+    attachOwnershipProof: () => attachOwnershipProof,
+    attemptLink: () => attemptLink,
+    bindingCursorId: () => bindingCursorId,
+    completeSelfServe: () => completeSelfServe,
+    createAubinWorld: () => createAubinWorld,
+    createLabmosaicWorld: () => createLabmosaicWorld,
+    createOperatorWorld: () => createOperatorWorld,
+    createWorld: () => createWorld,
+    escalateToHuman: () => escalateToHuman,
+    formatReceipt: () => formatReceipt,
+    humanCompleteUnlink: () => humanCompleteUnlink,
+    mobileSignIn: () => mobileSignIn,
+    nonEmailRecoveryAvailable: () => nonEmailRecoveryAvailable,
+    openTicket: () => openTicket,
+    proveXOwnership: () => proveXOwnership,
+    purchaseSecondSku: () => purchaseSecondSku,
+    rebindMobileToX: () => rebindMobileToX,
+    signInToBoundCursorAccount: () => signInToBoundCursorAccount,
+    unlinkAndRelink: () => unlinkAndRelink
+  });
+
+  // src/liveEvidence.ts
+  var LIVE_FAILURE_CASES = [1, 2, 3, 4];
+  var LIVE_VERDICT = "FAIL";
+
+  // src/recovery.ts
+  var ALREADY_LINKED_MESSAGE = "That Grok account is already linked to another Cursor account.";
+  var EMAIL_SLA_MINUTES = 15;
+  var AUBIN_TICKET_ID = "T-G68865";
+  var AUBIN = {
+    scenarioId: "aubinfernex",
+    xAccountId: "x:aubinfernex",
+    xHandle: "@AubinFernex",
+    boundCursorAccountId: "cursor:stale-other",
+    actorCursorAccountId: "cursor:aubin-current",
+    proof: "X-SESSION-AUBIN-4491",
+    email: "aubin.current@example.test",
+    ticketId: AUBIN_TICKET_ID,
+    device: "mac",
+    boundAccountSignInAvailable: false,
+    activated: true
+  };
+  var LAB = {
+    scenarioId: "labmosaic",
+    xAccountId: "x:labmosaic",
+    xHandle: "@labmosaic",
+    boundCursorAccountId: "cursor:mac-labmosaic",
+    actorCursorAccountId: "cursor:mobile-other",
+    proof: "X-SESSION-LAB-7720",
+    email: "lab.mosaic@example.test",
+    ticketId: "T-LAB-SIM",
+    device: "mobile",
+    boundAccountSignInAvailable: true,
+    activated: true
+  };
+  var OPERATOR_B = {
+    scenarioId: "operator-b",
+    xAccountId: "x:operator-b",
+    xHandle: "@operator_b",
+    boundCursorAccountId: "cursor:operator-b-stale",
+    actorCursorAccountId: "cursor:operator-b-current",
+    proof: "X-SESSION-OPB-2208",
+    email: "operator.b@example.test",
+    ticketId: "T-OPB-SIM",
+    device: "mac",
+    boundAccountSignInAvailable: false,
+    activated: true
+  };
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+  function createWorld(seed) {
+    const sessions = {
+      mac: seed.device === "mac" ? seed.actorCursorAccountId : null,
+      mobile: seed.device === "mobile" ? seed.actorCursorAccountId : null
+    };
+    if (seed.scenarioId === LAB.scenarioId) {
+      sessions.mac = seed.boundCursorAccountId;
+      sessions.mobile = seed.actorCursorAccountId;
+    }
+    return {
+      seed: clone(seed),
+      binding: {
+        xAccountId: seed.xAccountId,
+        cursorAccountId: seed.boundCursorAccountId,
+        activated: seed.activated
+      },
+      mailbox: {
+        to: seed.email,
+        delivered: false,
+        elapsedMinutes: 0,
+        slaMinutes: EMAIL_SLA_MINUTES
+      },
+      ticket: null,
+      sessions,
+      purchasedSku: false
+    };
+  }
+  function createAubinWorld() {
+    return createWorld(AUBIN);
+  }
+  function createLabmosaicWorld() {
+    return createWorld(LAB);
+  }
+  function createOperatorWorld() {
+    return createWorld(OPERATOR_B);
+  }
+  function attemptLink(world, cursorAccountId, xAccountId) {
+    if (xAccountId !== world.binding.xAccountId) {
+      throw new Error("Unknown X account in this simulated workspace");
+    }
+    if (cursorAccountId === world.binding.cursorAccountId) {
+      return { ok: true, alreadyOnThisAccount: true };
+    }
+    return {
+      ok: false,
+      code: "already_linked",
+      message: ALREADY_LINKED_MESSAGE,
+      boundCursorAccountId: world.binding.cursorAccountId,
+      actorCursorAccountId: cursorAccountId,
+      recovery: {
+        selfServe: "x_session_proof",
+        email: {
+          slaMinutes: EMAIL_SLA_MINUTES,
+          delivered: false,
+          canComplete: false
+        },
+        supportTicketId: world.seed.ticketId,
+        aiOnlyIsTerminal: false
+      }
+    };
+  }
+  function advanceMailbox(world, minutes) {
+    if (!Number.isFinite(minutes) || minutes < 0) {
+      throw new Error("Minutes must be a non-negative number");
+    }
+    const next = clone(world);
+    next.mailbox.elapsedMinutes += minutes;
+    next.mailbox.delivered = false;
+    return next;
+  }
+  function nonEmailRecoveryAvailable(world) {
+    return world.mailbox.elapsedMinutes >= world.mailbox.slaMinutes;
+  }
+  function proveXOwnership(world, xAccountId, proof) {
+    if (xAccountId !== world.seed.xAccountId) {
+      return { ok: false, reason: "wrong_x_account" };
+    }
+    if (proof.trim() !== world.seed.proof) {
+      return { ok: false, reason: "bad_proof" };
+    }
+    return { ok: true };
+  }
+  function receipt(input) {
+    return {
+      scenarioId: input.world.seed.scenarioId,
+      ticketId: input.ticketId,
+      xAccountId: input.world.seed.xAccountId,
+      xHandle: input.world.seed.xHandle,
+      unboundFrom: input.unboundFrom,
+      boundTo: input.boundTo,
+      device: input.device,
+      method: input.method,
+      emailUsed: false,
+      newSkuPurchased: false,
+      completed: true,
+      summary: input.summary
+    };
+  }
+  function unlinkAndRelink(world, input) {
+    const proof = proveXOwnership(world, world.seed.xAccountId, input.proof);
+    if (!proof.ok) {
+      return { ok: false, reason: proof.reason, world };
+    }
+    const next = clone(world);
+    const unboundFrom = next.binding.cursorAccountId;
+    next.binding = {
+      xAccountId: next.seed.xAccountId,
+      cursorAccountId: input.toCursorAccountId,
+      activated: true
+    };
+    next.sessions[input.device] = input.toCursorAccountId;
+    return {
+      ok: true,
+      world: next,
+      receipt: receipt({
+        world: next,
+        ticketId: null,
+        unboundFrom,
+        boundTo: input.toCursorAccountId,
+        device: input.device,
+        method: "x_session_proof",
+        summary: `${next.seed.xHandle} is unlinked from ${unboundFrom} and linked to ${input.toCursorAccountId}. Sign-in on this ${input.device} uses that Cursor account. No recovery email was required.`
+      })
+    };
+  }
+  function mobileSignIn(world, cursorAccountId) {
+    if (cursorAccountId === world.binding.cursorAccountId) {
+      return {
+        ok: true,
+        reachedCursorAccountId: cursorAccountId,
+        sameAsBound: true
+      };
+    }
+    return {
+      ok: false,
+      code: "stuck_on_other_device",
+      boundCursorAccountId: world.binding.cursorAccountId,
+      actorCursorAccountId: cursorAccountId,
+      stuckOn: "mac",
+      offers: ["sign_in_bound_account", "rebind_to_x"]
+    };
+  }
+  function signInToBoundCursorAccount(world, device) {
+    if (!world.seed.boundAccountSignInAvailable) {
+      return {
+        ok: false,
+        reason: "bound_cursor_account_not_accessible",
+        world
+      };
+    }
+    const next = clone(world);
+    const bound = next.binding.cursorAccountId;
+    next.sessions[device] = bound;
+    return {
+      ok: true,
+      world: next,
+      receipt: receipt({
+        world: next,
+        ticketId: null,
+        unboundFrom: bound,
+        boundTo: bound,
+        device,
+        method: "same_cursor_account",
+        summary: `This ${device} is now signed in to ${bound}, the same Cursor account that holds ${next.seed.xHandle}. The link was not moved.`
+      })
+    };
+  }
+  function rebindMobileToX(world, proof) {
+    return unlinkAndRelink(world, {
+      toCursorAccountId: world.seed.actorCursorAccountId,
+      proof,
+      device: "mobile"
+    });
+  }
+  var SAM_REPLY = "Sam (AI): Support cannot unlink a SuperGrok or X link. A teammate using this assistant would land in the same place. An xAI-side reset does not move the Cursor binding. This reply did not change the link.";
+  function openTicket(world) {
+    const next = clone(world);
+    next.ticket = {
+      id: next.seed.ticketId,
+      status: "ai_only",
+      aiUnblocked: false,
+      ownershipProved: false,
+      transcript: [SAM_REPLY]
+    };
+    return next;
+  }
+  function attachOwnershipProof(world, proof) {
+    if (!world.ticket) {
+      return { ok: false, reason: "no_ticket", world };
+    }
+    const check = proveXOwnership(world, world.seed.xAccountId, proof);
+    if (!check.ok) {
+      return { ok: false, reason: check.reason, world };
+    }
+    const next = clone(world);
+    if (!next.ticket) {
+      return { ok: false, reason: "no_ticket", world };
+    }
+    next.ticket.ownershipProved = true;
+    next.ticket.transcript = [
+      ...next.ticket.transcript,
+      "X session proof accepted on the ticket. The link is still in place until a human completes unlink."
+    ];
+    return { ok: true, world: next };
+  }
+  function escalateToHuman(world) {
+    if (!world.ticket) {
+      return { ok: false, reason: "no_ticket", world };
+    }
+    if (world.ticket.aiUnblocked) {
+      return { ok: false, reason: "ai_already_unblocked", world };
+    }
+    if (!world.ticket.ownershipProved) {
+      return { ok: false, reason: "ownership_proof_required", world };
+    }
+    const next = clone(world);
+    if (!next.ticket) {
+      return { ok: false, reason: "no_ticket", world };
+    }
+    next.ticket.status = "human_queued";
+    next.ticket.aiUnblocked = false;
+    next.ticket.transcript = [
+      ...next.ticket.transcript,
+      `Ticket ${next.ticket.id} is queued for a human on the Accounts desk. An AI reply is not the last step.`
+    ];
+    return { ok: true, world: next };
+  }
+  function humanCompleteUnlink(world, device) {
+    if (!world.ticket) {
+      return { ok: false, reason: "no_ticket", world };
+    }
+    if (world.ticket.status !== "human_queued" || !world.ticket.ownershipProved) {
+      return { ok: false, reason: "not_queued_for_human", world };
+    }
+    const next = clone(world);
+    if (!next.ticket) {
+      return { ok: false, reason: "no_ticket", world };
+    }
+    const unboundFrom = next.binding.cursorAccountId;
+    const boundTo = next.seed.actorCursorAccountId;
+    next.binding = {
+      xAccountId: next.seed.xAccountId,
+      cursorAccountId: boundTo,
+      activated: true
+    };
+    next.sessions[device] = boundTo;
+    next.ticket.status = "resolved_by_human";
+    next.ticket.aiUnblocked = false;
+    next.ticket.transcript = [
+      ...next.ticket.transcript,
+      `Human Accounts operator unlinked ${unboundFrom} and linked ${boundTo} on ticket ${next.ticket.id}.`
+    ];
+    return {
+      ok: true,
+      world: next,
+      receipt: receipt({
+        world: next,
+        ticketId: next.ticket.id,
+        unboundFrom,
+        boundTo,
+        device,
+        method: "human_escalation",
+        summary: `Ticket ${next.ticket.id} was resolved by a human. ${next.seed.xHandle} now links to ${boundTo}. The AI reply did not perform the unlink.`
+      })
+    };
+  }
+  function applyWrongClassFix(world, fix) {
+    return { ok: false, code: "wrong_class", fix, world };
+  }
+  function purchaseSecondSku(world) {
+    const next = clone(world);
+    next.purchasedSku = true;
+    return { ok: false, code: "sku_does_not_unlock", world: next };
+  }
+  function completeSelfServe(seed) {
+    let world = createWorld(seed);
+    const link = attemptLink(
+      world,
+      seed.actorCursorAccountId,
+      seed.xAccountId
+    );
+    if (link.ok) {
+      throw new Error("Expected the stale binding to block the first link");
+    }
+    world = advanceMailbox(world, EMAIL_SLA_MINUTES);
+    if (world.mailbox.delivered || !nonEmailRecoveryAvailable(world)) {
+      throw new Error("Email SLA fixture broke the non-email handoff");
+    }
+    const done = unlinkAndRelink(world, {
+      toCursorAccountId: seed.actorCursorAccountId,
+      proof: seed.proof,
+      device: seed.device
+    });
+    if (!done.ok) {
+      throw new Error("Self-serve unlink failed for a known-good proof");
+    }
+    return { ok: true, world: done.world, receipt: done.receipt, emailDelivered: false };
+  }
+  function formatReceipt(value) {
+    const ticket = value.ticketId ?? "none";
+    return [
+      "Recovery receipt (simulated)",
+      `Scenario: ${value.scenarioId}`,
+      `Handle: ${value.xHandle}`,
+      `X account: ${value.xAccountId}`,
+      `Method: ${value.method}`,
+      `Unlinked from: ${value.unboundFrom}`,
+      `Linked to: ${value.boundTo}`,
+      `Device: ${value.device}`,
+      `Email used: no`,
+      `New plan purchased: no`,
+      `Ticket: ${ticket}`,
+      value.summary
+    ].join("\n");
+  }
+  function bindingCursorId(world) {
+    return world.binding.cursorAccountId;
+  }
+  return __toCommonJS(recovery_exports);
+})();
+
+window.GrokRecovery = GrokRecovery;</script>
+  <script>
+    const R = window.GrokRecovery;
+    if (!R) {
+      throw new Error("Recovery engine missing");
+    }
+
+    let aubin = R.createAubinWorld();
+    let lab = R.createLabmosaicWorld();
+
+    const byId = (id) => {
+      const node = document.getElementById(id);
+      if (!node) {
+        throw new Error(`Missing #${id}`);
+      }
+      return node;
+    };
+
+    const show = (id) => {
+      byId(id).hidden = false;
+    };
+
+    const hide = (id) => {
+      byId(id).hidden = true;
+    };
+
+    const later = (fn) => {
+      if (window.__INSTANT__) {
+        fn();
+        return;
+      }
+      window.setTimeout(fn, 350);
+    };
+
+    const refreshBinding = () => {
+      byId("binding-status").textContent =
+        `X ${aubin.seed.xHandle} is linked to ${aubin.binding.cursorAccountId}.`;
+    };
+
+    const showReceipt = (id, receipt) => {
+      const node = byId(id);
+      node.hidden = false;
+      node.textContent = R.formatReceipt(receipt);
+    };
+
+    byId("aubin-handle").textContent = aubin.seed.xHandle;
+    byId("proof-display").textContent = aubin.seed.proof;
+    byId("lab-proof-display").textContent = lab.seed.proof;
+    refreshBinding();
+
+    byId("tab-aubin").addEventListener("click", () => {
+      show("panel-aubin");
+      hide("panel-lab");
+    });
+
+    byId("tab-lab").addEventListener("click", () => {
+      hide("panel-aubin");
+      show("panel-lab");
+    });
+
+    byId("link-button").addEventListener("click", () => {
+      show("link-loading");
+      later(() => {
+        hide("link-loading");
+        const result = R.attemptLink(
+          aubin,
+          aubin.seed.actorCursorAccountId,
+          aubin.seed.xAccountId,
+        );
+        hide("aubin-empty");
+        if (!result.ok) {
+          byId("link-error-text").textContent = result.message;
+          show("link-error");
+          show("recovery");
+        }
+      });
+    });
+
+    byId("email-button").addEventListener("click", () => {
+      show("mailbox");
+      byId("mailbox-status").textContent =
+        `Mailbox is empty. Nothing has arrived for ${aubin.mailbox.to}.`;
+    });
+
+    byId("wait-sla").addEventListener("click", () => {
+      aubin = R.advanceMailbox(aubin, R.EMAIL_SLA_MINUTES);
+      byId("mailbox-status").textContent =
+        `SLA of ${aubin.mailbox.slaMinutes} minutes elapsed. Delivered: no.`;
+      if (R.nonEmailRecoveryAvailable(aubin) && !aubin.mailbox.delivered) {
+        byId("email-blocked").textContent =
+          "The recovery email did not arrive. Use the X session proof. It does not depend on mail.";
+        show("email-blocked");
+      }
+    });
+
+    byId("prove-button").addEventListener("click", () => {
+      show("prove");
+    });
+
+    byId("prove").addEventListener("submit", (event) => {
+      event.preventDefault();
+      byId("confirm-rebind").click();
+    });
+
+    byId("confirm-rebind").addEventListener("click", () => {
+      const done = R.unlinkAndRelink(aubin, {
+        toCursorAccountId: aubin.seed.actorCursorAccountId,
+        proof: byId("proof-input").value,
+        device: "mac",
+      });
+      if (!done.ok) {
+        byId("proof-error").textContent =
+          "That code does not match the X session. The link is unchanged.";
+        show("proof-error");
+        return;
+      }
+      hide("proof-error");
+      aubin = done.world;
+      refreshBinding();
+      showReceipt("receipt-body", done.receipt);
+    });
+
+    byId("ticket-button").addEventListener("click", () => {
+      aubin = R.openTicket(aubin);
+      const reply = aubin.ticket ? aubin.ticket.transcript[0] : "";
+      byId("ai-reply").textContent = reply;
+      show("ticket");
+      refreshBinding();
+    });
+
+    byId("attach-proof").addEventListener("click", () => {
+      const attached = R.attachOwnershipProof(aubin, byId("ticket-proof").value);
+      if (!attached.ok) {
+        byId("escalate-note").textContent =
+          "The X session code was not accepted. The link is unchanged.";
+        show("escalate-note");
+        return;
+      }
+      aubin = attached.world;
+      byId("escalate-note").textContent =
+        "Proof is on the ticket. Sam still has not moved the link. Request a human to finish.";
+      show("escalate-note");
+      refreshBinding();
+    });
+
+    byId("escalate").addEventListener("click", () => {
+      const queued = R.escalateToHuman(aubin);
+      if (!queued.ok) {
+        byId("escalate-note").textContent =
+          "A human cannot take the ticket until the X session proof is attached. Email is not a substitute.";
+        show("escalate-note");
+        return;
+      }
+      aubin = queued.world;
+      const line = aubin.ticket ? aubin.ticket.transcript[aubin.ticket.transcript.length - 1] : "";
+      byId("escalate-note").textContent = line;
+      show("escalate-note");
+      show("human-complete");
+    });
+
+    byId("human-complete").addEventListener("click", () => {
+      const resolved = R.humanCompleteUnlink(aubin, "mac");
+      if (!resolved.ok) {
+        byId("escalate-note").textContent =
+          "The human desk does not have a queued ticket yet.";
+        return;
+      }
+      aubin = resolved.world;
+      refreshBinding();
+      showReceipt("receipt-body", resolved.receipt);
+    });
+
+    byId("reinstall").addEventListener("click", () => {
+      const result = R.applyWrongClassFix(aubin, "reinstall");
+      aubin = result.world;
+      byId("wrong-class-note").textContent =
+        "Reinstalling the app did not move the link. This is an account binding, not an installer problem.";
+      show("wrong-class-note");
+      refreshBinding();
+    });
+
+    byId("reset-usage").addEventListener("click", () => {
+      const result = R.applyWrongClassFix(aubin, "reset_weekly_usage");
+      aubin = result.world;
+      byId("wrong-class-note").textContent =
+        "Resetting weekly usage did not move the link. Usage and the X binding are different records.";
+      show("wrong-class-note");
+      refreshBinding();
+    });
+
+    byId("buy-sku").addEventListener("click", () => {
+      const result = R.purchaseSecondSku(aubin);
+      aubin = result.world;
+      byId("wrong-class-note").textContent =
+        "Buying another Cursor plan did not move the link. A second subscription is not the unlock.";
+      show("wrong-class-note");
+      refreshBinding();
+    });
+
+    byId("mobile-signin").addEventListener("click", () => {
+      hide("lab-empty");
+      const result = R.mobileSignIn(lab, lab.sessions.mobile ?? lab.seed.actorCursorAccountId);
+      const mobileResult = byId("mobile-result");
+      if (result.ok) {
+        mobileResult.className = "note";
+        mobileResult.textContent =
+          `This phone reached ${result.reachedCursorAccountId}, the same Cursor account that holds the Grok Bot.`;
+        show("mobile-result");
+        return;
+      }
+      mobileResult.className = "alert";
+      mobileResult.textContent =
+        `Grok Bot is stuck on the Mac account ${result.boundCursorAccountId}. This phone is signed in as ${result.actorCursorAccountId}. Sign in to the Mac account, or switch Grok Bot to X.`;
+      show("mobile-result");
+      show("lab-offers");
+    });
+
+    byId("use-mac-account").addEventListener("click", () => {
+      const done = R.signInToBoundCursorAccount(lab, "mobile");
+      if (!done.ok) {
+        byId("lab-receipt").hidden = false;
+        byId("lab-receipt").textContent =
+          "The Mac Cursor account cannot be opened from this phone. Switch to X instead.";
+        return;
+      }
+      lab = done.world;
+      byId("mobile-result").className = "note";
+      byId("mobile-result").textContent =
+        `This phone is signed in to ${done.receipt.boundTo}, the same Cursor account that holds Grok Bot on the Mac.`;
+      showReceipt("lab-receipt", done.receipt);
+    });
+
+    byId("switch-to-x").addEventListener("click", () => {
+      const done = R.rebindMobileToX(lab, byId("lab-proof").value);
+      if (!done.ok) {
+        byId("lab-proof-error").textContent =
+          "That code does not match the X session. The Mac binding is unchanged.";
+        show("lab-proof-error");
+        return;
+      }
+      hide("lab-proof-error");
+      lab = done.world;
+      byId("mobile-result").className = "note";
+      byId("mobile-result").textContent =
+        `This phone now holds ${done.world.seed.xHandle}, linked to ${done.receipt.boundTo}. The Mac binding is released.`;
+      showReceipt("lab-receipt", done.receipt);
+    });
+
+    byId("reset-lab").addEventListener("click", () => {
+      lab = R.createLabmosaicWorld();
+      byId("lab-proof-display").textContent = lab.seed.proof;
+      byId("lab-proof").value = "";
+      byId("lab-receipt").textContent = "";
+      hide("lab-receipt");
+      byId("mobile-result").textContent = "";
+      hide("mobile-result");
+      hide("lab-offers");
+      hide("lab-proof-error");
+      show("lab-empty");
+    });
+
+    byId("second-operator").addEventListener("click", () => {
+      const done = R.completeSelfServe(R.OPERATOR_B);
+      showReceipt("second-receipt", done.receipt);
+    });
+  </script>
+  <noscript>
+    <p>BUILD VERDICT: FAIL. Data on this page is simulated. Turn on JavaScript to walk the recovery draft.</p>
+  </noscript>
+</body>
+</html>
