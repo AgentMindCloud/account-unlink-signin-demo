@@ -166,6 +166,7 @@
   </style>
 </head>
 <body>
+<p class="unofficial-note" style="margin:0;padding:0.5rem 1rem;background:#fff4d6;color:#1c1915;border-bottom:1px solid #d8c48a;font:600 0.95rem/1.4 system-ui,sans-serif;text-align:center;">Unofficial community guide. Not affiliated with Cursor or xAI.</p>
   <div id="verdict-banner" role="status">
     <p><strong>BUILD VERDICT: FAIL</strong></p>
     <p>Data on this page is simulated. Live Cursor help still dead-ends “already linked to another Cursor account.” This draft does not clear that failure.</p>
@@ -199,15 +200,15 @@
     <div class="layout">
       <div class="work">
         <div class="tabs" role="tablist">
-          <button class="tab primary" id="tab-aubin" type="button">Stuck link · @AubinFernex</button>
-          <button class="tab" id="tab-lab" type="button">Mobile switch · @labmosaic</button>
+          <button class="tab primary" id="tab-userA" type="button">Stuck link · X user A</button>
+          <button class="tab" id="tab-lab" type="button">Mobile switch · X user B</button>
         </div>
 
-        <section id="panel-aubin" aria-label="Stuck link recovery">
+        <section id="panel-userA" aria-label="Stuck link recovery">
           <h2 class="section">Link X, then recover without the missing email</h2>
-          <p class="meta">Simulated accounts: X <span id="aubin-handle"></span>, current Cursor <code>cursor:aubin-current</code>, stale Cursor <code>cursor:stale-other</code>. Ticket id <strong>T-G68865</strong>.</p>
+          <p class="meta">Simulated accounts: X <span id="userA-handle"></span>, current Cursor <code>cursor:userA-current</code>, stale Cursor <code>cursor:stale-other</code>. Ticket id <strong>T-EXAMPLE-1</strong>.</p>
           <p id="binding-status" class="status"></p>
-          <p id="aubin-empty" class="note">No link attempt yet. The X account is still bound to the other Cursor account. Other logins for that stale account are not available.</p>
+          <p id="userA-empty" class="note">No link attempt yet. The X account is still bound to the other Cursor account. Other logins for that stale account are not available.</p>
 
           <div class="stack">
             <div class="row">
@@ -228,7 +229,7 @@
               <div class="row">
                 <button id="email-button" type="button">Send recovery email</button>
                 <button id="prove-button" type="button">Use the X session code</button>
-                <button id="ticket-button" type="button">Open support ticket T-G68865</button>
+                <button id="ticket-button" type="button">Open support ticket T-EXAMPLE-1</button>
               </div>
 
               <div id="mailbox" class="mailbox" hidden>
@@ -272,7 +273,7 @@
 
         <section id="panel-lab" hidden aria-label="Mobile account switch">
           <h2 class="section">Phone sign-in that can reach the Mac account or switch to X</h2>
-          <p class="meta">Simulated report from @labmosaic. The Mac session holds <code>cursor:mac-labmosaic</code>. The phone is on <code>cursor:mobile-other</code>. No support chat is required for either finish.</p>
+          <p class="meta">Simulated report from X user B. The Mac session holds <code>cursor:mac-userB</code>. The phone is on <code>cursor:mobile-other</code>. No support chat is required for either finish.</p>
           <div class="phone">
             <p class="kicker">Grok Bot · iPhone</p>
             <h2>Sign in with Cursor</h2>
@@ -355,46 +356,34 @@
     <p class="cases">Mapped failure cases: 5</p>
   </article>
 <article class="quote">
-    <h3>Cursor Forum · @deanrie, 19 Aug 2026</h3>
+    <h3>Cursor Forum post, 19 Aug 2026</h3>
     <blockquote>Right now, deleting a Cursor account doesn’t free up the link to a Grok account, and there’s no self-serve way to unlink or relink yet.</blockquote>
     <p><a href="https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783">https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783</a></p>
     <p class="cases">Mapped failure cases: 1, 2</p>
   </article>
 <article class="quote">
-    <h3>Cursor Forum · @OTNworld, 19 Aug 2026</h3>
-    <blockquote>hi@cursor.com ticket T-E97626 is looping on the AI assistant (Sam). It says Support/Engineering cannot unlink, that a teammate would land in the same place, and that an xAI-side reset does not re-point the link.</blockquote>
+    <h3>Cursor Forum post, 19 Aug 2026</h3>
+    <blockquote>hi@cursor.com ticket is looping on the AI assistant (Sam). It says Support/Engineering cannot unlink, that a teammate would land in the same place, and that an xAI-side reset does not re-point the link.</blockquote>
     <p><a href="https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783">https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783</a></p>
     <p class="cases">Mapped failure cases: 4</p>
   </article>
 <article class="quote">
-    <h3>Cursor Forum · @Colin, 22 Aug 2026</h3>
+    <h3>Cursor Forum post, 22 Aug 2026</h3>
     <blockquote>We are not able to handle individual issues about account linking through the forum.</blockquote>
     <p><a href="https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783">https://forum.cursor.com/t/deleted-cursor-account-leaves-grok-link-orphaned-and-blocks-relinking/168783</a></p>
     <p class="cases">Mapped failure cases: 4</p>
   </article>
 <article class="quote">
-    <h3>Cursor Forum · @deanrie, 18 Aug 2026</h3>
+    <h3>Cursor Forum post, 18 Aug 2026</h3>
     <blockquote>The error `That Grok account is already linked to another Cursor account` is a known issue we’re tracking. Right now, deleting a Cursor account does not remove the Grok account link, and there’s no self-serve way to unlink and relink yet.</blockquote>
     <p><a href="https://forum.cursor.com/t/free-cursor-ultra-with-grok/168286/16">https://forum.cursor.com/t/free-cursor-ultra-with-grok/168286/16</a></p>
     <p class="cases">Mapped failure cases: 1</p>
-  </article>
-<article class="quote">
-    <h3>X · @AubinFernex, 5 Oct 2026</h3>
-    <blockquote>Grok Bot link stuck: "already linked to another Cursor account." No other login, and the recovery email never arrives. T-G68865 is only Sam. Forum sent me back to that ticket.</blockquote>
-    <p><a href="https://x.com/AubinFernex/status/2107203371828478447">https://x.com/AubinFernex/status/2107203371828478447</a></p>
-    <p class="cases">Mapped failure cases: 1, 2, 4</p>
-  </article>
-<article class="quote">
-    <h3>X · @labmosaic</h3>
-    <blockquote>there is no way logging grokbot via cursor on mobile. My account stuck on the mac. Please fix this asap. I cannot change my grokbot to X account as well.</blockquote>
-    <p><a href="https://x.com/labmosaic/status/2107299322702495745">https://x.com/labmosaic/status/2107299322702495745</a></p>
-    <p class="cases">Mapped failure cases: 3</p>
   </article>
       </aside>
     </div>
 
     <footer>
-      <p>Draft only. No post, no product pull request, no merge, and no payment. Account names and mailbox addresses ending in example.test are fixtures. Ticket T-G68865 is the id from the public @AubinFernex report, printed on the simulated human receipt so a second person can find it.</p>
+      <p>Draft only. No post, no product pull request, no merge, and no payment. Account names and mailbox addresses ending in example.test are fixtures. Ticket ids are fixtures too.</p>
     </footer>
   </div>
 
@@ -422,8 +411,8 @@ var GrokRecovery = (() => {
   var recovery_exports = {};
   __export(recovery_exports, {
     ALREADY_LINKED_MESSAGE: () => ALREADY_LINKED_MESSAGE,
-    AUBIN: () => AUBIN,
-    AUBIN_TICKET_ID: () => AUBIN_TICKET_ID,
+    USER_A: () => USER_A,
+    USER_A_TICKET_ID: () => USER_A_TICKET_ID,
     EMAIL_SLA_MINUTES: () => EMAIL_SLA_MINUTES,
     LAB: () => LAB,
     LIVE_FAILURE_CASES: () => LIVE_FAILURE_CASES,
@@ -435,8 +424,8 @@ var GrokRecovery = (() => {
     attemptLink: () => attemptLink,
     bindingCursorId: () => bindingCursorId,
     completeSelfServe: () => completeSelfServe,
-    createAubinWorld: () => createAubinWorld,
-    createLabmosaicWorld: () => createLabmosaicWorld,
+    createUserAWorld: () => createUserAWorld,
+    createUserBWorld: () => createUserBWorld,
     createOperatorWorld: () => createOperatorWorld,
     createWorld: () => createWorld,
     escalateToHuman: () => escalateToHuman,
@@ -459,28 +448,28 @@ var GrokRecovery = (() => {
   // src/recovery.ts
   var ALREADY_LINKED_MESSAGE = "That Grok account is already linked to another Cursor account.";
   var EMAIL_SLA_MINUTES = 15;
-  var AUBIN_TICKET_ID = "T-G68865";
-  var AUBIN = {
-    scenarioId: "aubinfernex",
-    xAccountId: "x:aubinfernex",
-    xHandle: "@AubinFernex",
+  var USER_A_TICKET_ID = "T-EXAMPLE-1";
+  var USER_A = {
+    scenarioId: "user-a",
+    xAccountId: "x:user-a",
+    xHandle: "X user A",
     boundCursorAccountId: "cursor:stale-other",
-    actorCursorAccountId: "cursor:aubin-current",
-    proof: "X-SESSION-AUBIN-4491",
-    email: "aubin.current@example.test",
-    ticketId: AUBIN_TICKET_ID,
+    actorCursorAccountId: "cursor:userA-current",
+    proof: "X-SESSION-USER_A-4491",
+    email: "userA.current@example.test",
+    ticketId: USER_A_TICKET_ID,
     device: "mac",
     boundAccountSignInAvailable: false,
     activated: true
   };
   var LAB = {
-    scenarioId: "labmosaic",
-    xAccountId: "x:labmosaic",
-    xHandle: "@labmosaic",
-    boundCursorAccountId: "cursor:mac-labmosaic",
+    scenarioId: "userB",
+    xAccountId: "x:userB",
+    xHandle: "X user B",
+    boundCursorAccountId: "cursor:mac-userB",
     actorCursorAccountId: "cursor:mobile-other",
     proof: "X-SESSION-LAB-7720",
-    email: "lab.mosaic@example.test",
+    email: "user.b@example.test",
     ticketId: "T-LAB-SIM",
     device: "mobile",
     boundAccountSignInAvailable: true,
@@ -489,7 +478,7 @@ var GrokRecovery = (() => {
   var OPERATOR_B = {
     scenarioId: "operator-b",
     xAccountId: "x:operator-b",
-    xHandle: "@operator_b",
+    xHandle: "X operator B",
     boundCursorAccountId: "cursor:operator-b-stale",
     actorCursorAccountId: "cursor:operator-b-current",
     proof: "X-SESSION-OPB-2208",
@@ -529,10 +518,10 @@ var GrokRecovery = (() => {
       purchasedSku: false
     };
   }
-  function createAubinWorld() {
-    return createWorld(AUBIN);
+  function createUserAWorld() {
+    return createWorld(USER_A);
   }
-  function createLabmosaicWorld() {
+  function createUserBWorld() {
     return createWorld(LAB);
   }
   function createOperatorWorld() {
@@ -830,8 +819,8 @@ window.GrokRecovery = GrokRecovery;</script>
       throw new Error("Recovery engine missing");
     }
 
-    let aubin = R.createAubinWorld();
-    let lab = R.createLabmosaicWorld();
+    let userA = R.createUserAWorld();
+    let lab = R.createUserBWorld();
 
     const byId = (id) => {
       const node = document.getElementById(id);
@@ -859,7 +848,7 @@ window.GrokRecovery = GrokRecovery;</script>
 
     const refreshBinding = () => {
       byId("binding-status").textContent =
-        `X ${aubin.seed.xHandle} is linked to ${aubin.binding.cursorAccountId}.`;
+        `X ${userA.seed.xHandle} is linked to ${userA.binding.cursorAccountId}.`;
     };
 
     const showReceipt = (id, receipt) => {
@@ -868,18 +857,18 @@ window.GrokRecovery = GrokRecovery;</script>
       node.textContent = R.formatReceipt(receipt);
     };
 
-    byId("aubin-handle").textContent = aubin.seed.xHandle;
-    byId("proof-display").textContent = aubin.seed.proof;
+    byId("userA-handle").textContent = userA.seed.xHandle;
+    byId("proof-display").textContent = userA.seed.proof;
     byId("lab-proof-display").textContent = lab.seed.proof;
     refreshBinding();
 
-    byId("tab-aubin").addEventListener("click", () => {
-      show("panel-aubin");
+    byId("tab-userA").addEventListener("click", () => {
+      show("panel-userA");
       hide("panel-lab");
     });
 
     byId("tab-lab").addEventListener("click", () => {
-      hide("panel-aubin");
+      hide("panel-userA");
       show("panel-lab");
     });
 
@@ -888,11 +877,11 @@ window.GrokRecovery = GrokRecovery;</script>
       later(() => {
         hide("link-loading");
         const result = R.attemptLink(
-          aubin,
-          aubin.seed.actorCursorAccountId,
-          aubin.seed.xAccountId,
+          userA,
+          userA.seed.actorCursorAccountId,
+          userA.seed.xAccountId,
         );
-        hide("aubin-empty");
+        hide("userA-empty");
         if (!result.ok) {
           byId("link-error-text").textContent = result.message;
           show("link-error");
@@ -904,14 +893,14 @@ window.GrokRecovery = GrokRecovery;</script>
     byId("email-button").addEventListener("click", () => {
       show("mailbox");
       byId("mailbox-status").textContent =
-        `Mailbox is empty. Nothing has arrived for ${aubin.mailbox.to}.`;
+        `Mailbox is empty. Nothing has arrived for ${userA.mailbox.to}.`;
     });
 
     byId("wait-sla").addEventListener("click", () => {
-      aubin = R.advanceMailbox(aubin, R.EMAIL_SLA_MINUTES);
+      userA = R.advanceMailbox(userA, R.EMAIL_SLA_MINUTES);
       byId("mailbox-status").textContent =
-        `SLA of ${aubin.mailbox.slaMinutes} minutes elapsed. Delivered: no.`;
-      if (R.nonEmailRecoveryAvailable(aubin) && !aubin.mailbox.delivered) {
+        `SLA of ${userA.mailbox.slaMinutes} minutes elapsed. Delivered: no.`;
+      if (R.nonEmailRecoveryAvailable(userA) && !userA.mailbox.delivered) {
         byId("email-blocked").textContent =
           "The recovery email did not arrive. Use the X session proof. It does not depend on mail.";
         show("email-blocked");
@@ -928,8 +917,8 @@ window.GrokRecovery = GrokRecovery;</script>
     });
 
     byId("confirm-rebind").addEventListener("click", () => {
-      const done = R.unlinkAndRelink(aubin, {
-        toCursorAccountId: aubin.seed.actorCursorAccountId,
+      const done = R.unlinkAndRelink(userA, {
+        toCursorAccountId: userA.seed.actorCursorAccountId,
         proof: byId("proof-input").value,
         device: "mac",
       });
@@ -940,28 +929,28 @@ window.GrokRecovery = GrokRecovery;</script>
         return;
       }
       hide("proof-error");
-      aubin = done.world;
+      userA = done.world;
       refreshBinding();
       showReceipt("receipt-body", done.receipt);
     });
 
     byId("ticket-button").addEventListener("click", () => {
-      aubin = R.openTicket(aubin);
-      const reply = aubin.ticket ? aubin.ticket.transcript[0] : "";
+      userA = R.openTicket(userA);
+      const reply = userA.ticket ? userA.ticket.transcript[0] : "";
       byId("ai-reply").textContent = reply;
       show("ticket");
       refreshBinding();
     });
 
     byId("attach-proof").addEventListener("click", () => {
-      const attached = R.attachOwnershipProof(aubin, byId("ticket-proof").value);
+      const attached = R.attachOwnershipProof(userA, byId("ticket-proof").value);
       if (!attached.ok) {
         byId("escalate-note").textContent =
           "The X session code was not accepted. The link is unchanged.";
         show("escalate-note");
         return;
       }
-      aubin = attached.world;
+      userA = attached.world;
       byId("escalate-note").textContent =
         "Proof is on the ticket. Sam still has not moved the link. Request a human to finish.";
       show("escalate-note");
@@ -969,35 +958,35 @@ window.GrokRecovery = GrokRecovery;</script>
     });
 
     byId("escalate").addEventListener("click", () => {
-      const queued = R.escalateToHuman(aubin);
+      const queued = R.escalateToHuman(userA);
       if (!queued.ok) {
         byId("escalate-note").textContent =
           "A human cannot take the ticket until the X session proof is attached. Email is not a substitute.";
         show("escalate-note");
         return;
       }
-      aubin = queued.world;
-      const line = aubin.ticket ? aubin.ticket.transcript[aubin.ticket.transcript.length - 1] : "";
+      userA = queued.world;
+      const line = userA.ticket ? userA.ticket.transcript[userA.ticket.transcript.length - 1] : "";
       byId("escalate-note").textContent = line;
       show("escalate-note");
       show("human-complete");
     });
 
     byId("human-complete").addEventListener("click", () => {
-      const resolved = R.humanCompleteUnlink(aubin, "mac");
+      const resolved = R.humanCompleteUnlink(userA, "mac");
       if (!resolved.ok) {
         byId("escalate-note").textContent =
           "The human desk does not have a queued ticket yet.";
         return;
       }
-      aubin = resolved.world;
+      userA = resolved.world;
       refreshBinding();
       showReceipt("receipt-body", resolved.receipt);
     });
 
     byId("reinstall").addEventListener("click", () => {
-      const result = R.applyWrongClassFix(aubin, "reinstall");
-      aubin = result.world;
+      const result = R.applyWrongClassFix(userA, "reinstall");
+      userA = result.world;
       byId("wrong-class-note").textContent =
         "Reinstalling the app did not move the link. This is an account binding, not an installer problem.";
       show("wrong-class-note");
@@ -1005,8 +994,8 @@ window.GrokRecovery = GrokRecovery;</script>
     });
 
     byId("reset-usage").addEventListener("click", () => {
-      const result = R.applyWrongClassFix(aubin, "reset_weekly_usage");
-      aubin = result.world;
+      const result = R.applyWrongClassFix(userA, "reset_weekly_usage");
+      userA = result.world;
       byId("wrong-class-note").textContent =
         "Resetting weekly usage did not move the link. Usage and the X binding are different records.";
       show("wrong-class-note");
@@ -1014,8 +1003,8 @@ window.GrokRecovery = GrokRecovery;</script>
     });
 
     byId("buy-sku").addEventListener("click", () => {
-      const result = R.purchaseSecondSku(aubin);
-      aubin = result.world;
+      const result = R.purchaseSecondSku(userA);
+      userA = result.world;
       byId("wrong-class-note").textContent =
         "Buying another Cursor plan did not move the link. A second subscription is not the unlock.";
       show("wrong-class-note");
@@ -1072,7 +1061,7 @@ window.GrokRecovery = GrokRecovery;</script>
     });
 
     byId("reset-lab").addEventListener("click", () => {
-      lab = R.createLabmosaicWorld();
+      lab = R.createUserBWorld();
       byId("lab-proof-display").textContent = lab.seed.proof;
       byId("lab-proof").value = "";
       byId("lab-receipt").textContent = "";
